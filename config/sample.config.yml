@@ -1,0 +1,4 @@
+apikey: abc123456789
+apiurl: http://api.local
+period: 5
+timeout: 5

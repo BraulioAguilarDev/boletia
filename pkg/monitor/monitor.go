@@ -7,7 +7,7 @@ import (
 )
 
 type handler struct {
-	Period time.Duration
+	Period time.Duration // remove period time to config yml
 	Client *request.Request
 }
 
@@ -18,8 +18,8 @@ func NewHandler(period int) *handler {
 	}
 }
 
-// Sync sends request to external api
-func (h *handler) Sync() (*http.Response, error) {
+// Pull requests external api
+func (h *handler) Pull() (*http.Response, error) {
 	res, err := h.Client.MakeRequest(&request.Options{
 		Method:   http.MethodGet,
 		Endpoint: "https://pokeapi.co/api/v2/pokemon/ditto",

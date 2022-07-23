@@ -4,9 +4,20 @@ import "github.com/spf13/viper"
 
 var Config Settings
 
+type Database struct {
+	DBhost     string
+	DBport     int
+	DBuser     string
+	DBname     string
+	DBpassword string
+	SSLmode    string
+	Driver     string
+}
+
 type Settings struct {
-	ApiKey string
-	ApiURL string
+	ApiKey   string
+	ApiURL   string
+	Database Database
 }
 
 func init() {

@@ -1,25 +1,37 @@
 package server
 
 import (
+	"boletia/config"
+	"boletia/currency"
+	postgress "boletia/currency/repository/postgres"
+	usecaseCurrency "boletia/currency/usecase"
 	"boletia/pkg/monitor"
+	"database/sql"
 	"fmt"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	_ "github.com/lib/pq"
 )
 
 // App struct
 type App struct {
-	Service *fiber.App
-	Period  int
+	Service         *fiber.App
+	CurrencyUsecase currency.Usecase
 }
 
 // NewApp build a new instance
 func NewApp() (*App, error) {
 	// start db conexion
-	// db...
+	db, err := initDb()
+	if err != nil {
+		panic(err)
+	}
+
+	// Build repositories
+	currencyRepo := postgress.NewCurrencyRepository(db)
 
 	fiber := fiber.New()
 
@@ -27,8 +39,8 @@ func NewApp() (*App, error) {
 	fiber.Use(logger.New())
 
 	return &App{
-		Service: fiber,
-		Period:  5,
+		Service:         fiber,
+		CurrencyUsecase: usecaseCurrency.NewCurrencyUsecase(currencyRepo),
 	}, nil
 }
 
@@ -52,9 +64,9 @@ func (app *App) Run(port string) error {
 
 // Sync function calls internal function to get infomation
 func (app *App) Sync() {
-	currencyMonitor := monitor.NewHandler(app.Period)
+	currencyMonitor := monitor.NewHandler(5) // period sync
 	for {
-		<-time.After(time.Duration(app.Period) * time.Second)
+		<-time.After(time.Duration(10) * time.Second)
 		res, err := currencyMonitor.Pull()
 		if err != nil {
 			panic(err)
@@ -63,4 +75,19 @@ func (app *App) Sync() {
 		fmt.Println(res.Status)
 		// Passing the result to new function for keeping it in our db
 	}
+}
+
+func initDb() (*sql.DB, error) {
+	sourceName := fmt.Sprintf(`host=%s port=%d user=%s dbname=%s password=%s sslmode=%s`,
+		config.Config.Database.DBhost,
+		config.Config.Database.DBport,
+		config.Config.Database.DBuser,
+		config.Config.Database.DBname,
+		config.Config.Database.DBpassword,
+		config.Config.Database.SSLmode,
+	)
+
+	db, err := sql.Open(config.Config.Database.Driver, sourceName)
+
+	return db, err
 }

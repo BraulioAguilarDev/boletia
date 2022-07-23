@@ -2,3 +2,12 @@ apikey: abc123456789
 apiurl: http://api.local
 period: 5
 timeout: 5
+
+database:
+  dbhost: localhost
+  dbport: 5432
+  dbuser: test
+  dbname: test
+  dbpassword: test
+  sslmode: disable
+  driver: postgres

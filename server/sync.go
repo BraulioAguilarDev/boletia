@@ -36,7 +36,7 @@ func saveCurrencies(usecase currency.Usecase, res *http.Response) error {
 
 // saveLog keep log request
 func saveLog(usecase log.Usecase, total time.Duration, code int, url string, tm time.Time) error {
-	glog.Infof("Saving log: %d, %s", code, url)
+	glog.Infof("Log, code: %d, url: %s", code, url)
 
 	if err := usecase.Create(total, code, url, tm); err != nil {
 		return err
@@ -56,26 +56,24 @@ func (app *App) Sync() {
 		// fix: timer
 		start := time.Now()
 
-		glog.Infof("Request to: %s", config.Config.ApiURL)
+		glog.Infof("URL: %s", config.Config.ApiURL)
 		result, end, err := currencyMonitor.GetCurrencies()
-		if err != nil || result.StatusCode != http.StatusOK {
-
-			// Save the current error
-			if err != nil {
-				code = http.StatusInternalServerError
-			} else {
-				code = result.StatusCode
-			}
-
-			total := end.Sub(start)
-			if err := saveLog(app.LogUsecase, total, code, config.Config.ApiURL, time.Now()); err != nil {
-				glog.Errorf("Error saving logs: %s", err.Error())
-			}
-		} else {
+		if result.StatusCode == http.StatusOK {
 			// Keeping info
 			if err := saveCurrencies(app.CurrencyUsecase, result); err != nil {
 				glog.Errorf("Error saving currencies: %s", err.Error())
 			}
+		}
+
+		if err != nil {
+			code = http.StatusInternalServerError
+		} else {
+			code = result.StatusCode
+		}
+
+		total := end.Sub(start)
+		if err := saveLog(app.LogUsecase, total, code, config.Config.ApiURL, time.Now()); err != nil {
+			glog.Errorf("Error saving logs: %s", err.Error())
 		}
 
 		glog.Infoln("...................................")

@@ -19,10 +19,10 @@ type Options struct {
 }
 
 // NewClient func
-func NewClient(limit int) *Request {
+func NewClient(timeout int) *Request {
 	return &Request{
 		Client: &http.Client{
-			Timeout: time.Duration(limit) * time.Second,
+			Timeout: time.Duration(timeout) * time.Second,
 		},
 	}
 }

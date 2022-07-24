@@ -1,6 +1,8 @@
 package currency
 
+import "boletia/monitor"
+
 type Repository interface {
 	Get() error
-	Pull() error
+	Create(data monitor.Response) error
 }

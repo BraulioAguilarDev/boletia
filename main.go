@@ -2,22 +2,25 @@ package main
 
 import (
 	"boletia/server"
+	"flag"
+
+	"github.com/golang/glog"
 )
 
 // main function
 func main() {
 	app, err := server.NewApp()
 	if err != nil {
-		panic(err)
+		glog.Errorf("Initialization failed: %s", err.Error())
 	}
 
-	// Execute sync
-	go app.Sync()
+	flag.Parse()
 
-	// fmt.Println(config.Config.ApiURL)
+	// Execute sync with period time
+	go app.Sync()
 
 	// Run service
 	if err := app.Run(":9090"); err != nil {
-		panic(err)
+		glog.Errorf("Run failed: %s", err.Error())
 	}
 }

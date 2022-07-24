@@ -3,12 +3,11 @@ package server
 import (
 	"boletia/config"
 	"boletia/currency"
-	postgress "boletia/currency/repository/postgres"
+	currencyRepository "boletia/currency/repository/postgres"
 	usecaseCurrency "boletia/currency/usecase"
-	"boletia/pkg/monitor"
+	"context"
 	"database/sql"
 	"fmt"
-	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -27,11 +26,12 @@ func NewApp() (*App, error) {
 	// start db conexion
 	db, err := initDb()
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
-	// Build repositories
-	currencyRepo := postgress.NewCurrencyRepository(db)
+	// Build instance repositories & app
+	ctx := context.Background()
+	currencyRepo := currencyRepository.NewCurrencyRepository(db, ctx)
 
 	fiber := fiber.New()
 
@@ -44,17 +44,16 @@ func NewApp() (*App, error) {
 	}, nil
 }
 
-// SetupRouter makes routes
+// SetupRouter makes public routes
 func (app *App) SetupRouter() {
-	fmt.Println("router")
+	// fmt.Println("router")
 }
 
-// Run function that execute api
+// Run function executes our service
 func (app *App) Run(port string) error {
 
 	app.SetupRouter()
 
-	// Calls listen
 	if err := app.Service.Listen(port); err != nil {
 		return err
 	}
@@ -62,21 +61,7 @@ func (app *App) Run(port string) error {
 	return nil
 }
 
-// Sync function calls internal function to get infomation
-func (app *App) Sync() {
-	currencyMonitor := monitor.NewHandler(5) // period sync
-	for {
-		<-time.After(time.Duration(10) * time.Second)
-		res, err := currencyMonitor.Pull()
-		if err != nil {
-			panic(err)
-		}
-
-		fmt.Println(res.Status)
-		// Passing the result to new function for keeping it in our db
-	}
-}
-
+// initDb function to do conexion to db
 func initDb() (*sql.DB, error) {
 	sourceName := fmt.Sprintf(`host=%s port=%d user=%s dbname=%s password=%s sslmode=%s`,
 		config.Config.Database.DBhost,
@@ -88,6 +73,11 @@ func initDb() (*sql.DB, error) {
 	)
 
 	db, err := sql.Open(config.Config.Database.Driver, sourceName)
+
+	// Check ping
+	if err := db.Ping(); err != nil {
+		return nil, err
+	}
 
 	return db, err
 }

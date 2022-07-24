@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"boletia/currency"
+	"boletia/monitor"
 )
 
 type CurrencyUsecase struct {
@@ -19,7 +20,11 @@ func (c CurrencyUsecase) Get() error {
 	return nil
 }
 
-func (c CurrencyUsecase) Pull() error {
-	// c.CurrencyRepo.Bulk()
+func (c CurrencyUsecase) Create(r monitor.Response) error {
+	// Calls repository function to save
+	if err := c.CurrencyRepo.Create(r); err != nil {
+		return err
+	}
+
 	return nil
 }

@@ -15,8 +15,12 @@ type Database struct {
 }
 
 type Settings struct {
-	ApiKey   string
-	ApiURL   string
+	Period  int
+	Timeout int
+
+	ApiKey string
+	ApiURL string
+
 	Database Database
 }
 

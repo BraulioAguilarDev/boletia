@@ -20,11 +20,6 @@ func NewCurrencyRepository(db *sql.DB, ctx context.Context) *CurrencyRepository 
 	}
 }
 
-func (c CurrencyRepository) Get() error {
-	// q := c.db.CreateCurrency()
-	return nil
-}
-
 // Create function to insert rows from api
 func (c CurrencyRepository) Create(data monitor.Response) error {
 

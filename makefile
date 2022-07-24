@@ -6,5 +6,8 @@ seed:
 dc-up:
 	docker compose -f docker-compose.yml up -d
 
+dc-down:
+	docker compose -f docker-compose.yml down
+
 docker:
 	docker build -t golang/air .

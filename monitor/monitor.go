@@ -35,11 +35,15 @@ func NewHandler() *handler {
 }
 
 // GetCurrencies requests external api
-func (h *handler) GetCurrencies() (*http.Response, error) {
+func (h *handler) GetCurrencies() (*http.Response, time.Time, error) {
 	res, err := h.Client.MakeRequest(&request.Options{
 		Method:   http.MethodGet,
 		Endpoint: config.Config.ApiURL + "?apikey=" + config.Config.ApiKey,
 	})
 
-	return res, err
+	if err != nil {
+		return nil, time.Now(), err
+	}
+
+	return res, time.Now(), nil
 }

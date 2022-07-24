@@ -3,9 +3,9 @@ package server
 import (
 	"boletia/config"
 	"boletia/currency"
+	"boletia/log"
 	"boletia/monitor"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -13,8 +13,10 @@ import (
 	"github.com/golang/glog"
 )
 
-// saveIndb uses out usecase interface to do the insert
-func saveIndb(res *http.Response, usecase currency.Usecase) error {
+// saveCurrencies uses out usecase interface to do the insert
+func saveCurrencies(usecase currency.Usecase, res *http.Response) error {
+	glog.Infoln("Saving currencies in db...")
+
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return err
@@ -32,29 +34,50 @@ func saveIndb(res *http.Response, usecase currency.Usecase) error {
 	return nil
 }
 
+// saveLog keep log request
+func saveLog(usecase log.Usecase, total time.Duration, code int, url string, tm time.Time) error {
+	glog.Infof("Saving log: %d, %s", code, url)
+
+	if err := usecase.Create(total, code, url, tm); err != nil {
+		return err
+	}
+	return nil
+}
+
 // Sync function calls external function to get information
 func (app *App) Sync() {
+
+	var code int
+
 	currencyMonitor := monitor.NewHandler()
 	for {
 		<-time.After(time.Duration(config.Config.Period) * time.Second)
 
-		// TODO timer
+		// fix: timer
+		start := time.Now()
 
-		result, err := currencyMonitor.GetCurrencies()
+		glog.Infof("Request to: %s", config.Config.ApiURL)
+		result, end, err := currencyMonitor.GetCurrencies()
 		if err != nil || result.StatusCode != http.StatusOK {
 
 			// Save the current error
 			if err != nil {
-				fmt.Println(err)
+				code = http.StatusInternalServerError
+			} else {
+				code = result.StatusCode
 			}
 
-			glog.Errorf("Error sync...")
-			// glog
+			total := end.Sub(start)
+			if err := saveLog(app.LogUsecase, total, code, config.Config.ApiURL, time.Now()); err != nil {
+				glog.Errorf("Error saving logs: %s", err.Error())
+			}
 		} else {
 			// Keeping info
-			if err := saveIndb(result, app.CurrencyUsecase); err != nil {
-				glog.Errorf("Error saving data from monitor: %s", err.Error())
+			if err := saveCurrencies(app.CurrencyUsecase, result); err != nil {
+				glog.Errorf("Error saving currencies: %s", err.Error())
 			}
 		}
+
+		glog.Infoln("...................................")
 	}
 }

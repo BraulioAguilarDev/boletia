@@ -5,6 +5,9 @@ import (
 	"boletia/currency"
 	currencyRepository "boletia/currency/repository/postgres"
 	usecaseCurrency "boletia/currency/usecase"
+	"boletia/log"
+	logRepository "boletia/log/repository/postgres"
+	usecaseLog "boletia/log/usecase"
 	"context"
 	"database/sql"
 	"fmt"
@@ -19,6 +22,7 @@ import (
 type App struct {
 	Service         *fiber.App
 	CurrencyUsecase currency.Usecase
+	LogUsecase      log.Usecase
 }
 
 // NewApp build a new instance
@@ -32,6 +36,7 @@ func NewApp() (*App, error) {
 	// Build instance repositories & app
 	ctx := context.Background()
 	currencyRepo := currencyRepository.NewCurrencyRepository(db, ctx)
+	logRepo := logRepository.NewLogRepository(db, ctx)
 
 	fiber := fiber.New()
 
@@ -41,6 +46,7 @@ func NewApp() (*App, error) {
 	return &App{
 		Service:         fiber,
 		CurrencyUsecase: usecaseCurrency.NewCurrencyUsecase(currencyRepo),
+		LogUsecase:      usecaseLog.NewLogUsecase(logRepo),
 	}, nil
 }
 

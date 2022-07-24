@@ -12,3 +12,13 @@ CREATE TABLE currency (
   PRIMARY KEY(id)
 );
 
+-- Log table
+CREATE TABLE log (
+  "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
+  "duration" INTEGER NOT NULL,
+  "code" INTEGER NOT NULL,
+  "request" TEXT NOT NULL,
+  "error" TEXT DEFAULT '' NOT NULL,
+  "created_at" TIMESTAMP NOT NULL,
+  PRIMARY KEY(id)
+);

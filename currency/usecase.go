@@ -1,8 +1,9 @@
 package currency
 
-import "boletia/monitor"
+import (
+	"boletia/monitor"
+)
 
 type Usecase interface {
-	Get() error
 	Create(data monitor.Response) error
 }

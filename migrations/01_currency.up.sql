@@ -18,7 +18,6 @@ CREATE TABLE log (
   "duration" INTEGER NOT NULL,
   "code" INTEGER NOT NULL,
   "request" TEXT NOT NULL,
-  "error" TEXT DEFAULT '' NOT NULL,
   "created_at" TIMESTAMP NOT NULL,
   PRIMARY KEY(id)
 );

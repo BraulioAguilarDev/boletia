@@ -8,4 +8,5 @@ import (
 type Usecase interface {
 	Create(data monitor.Response) error
 	GetCurrenciesByCode(code string, start, end time.Time) ([]Currency, error)
+	GetAllCurrencies(start, end time.Time) ([]Currency, error)
 }

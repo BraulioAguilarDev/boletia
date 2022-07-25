@@ -34,13 +34,24 @@ func (c CurrencyUsecase) GetCurrenciesByCode(code string, start, end time.Time) 
 	result, err := c.CurrencyRepo.GetCurrenciesByCode(code, start, end)
 
 	// maps internal to external data
-	data := mapCurrency(result)
+	data := mapModelCurrencyToDto(result)
 
 	return data, err
 }
 
-// mapCurrency function maps model struct to an external object
-func mapCurrency(currencies []model.Currency) []currency.Currency {
+// GetAllCurrencies function gets ALL rows
+func (c CurrencyUsecase) GetAllCurrencies(start, end time.Time) ([]currency.Currency, error) {
+
+	result, err := c.CurrencyRepo.GetAllCurrencies(start, end)
+
+	// maps internal to external data
+	data := mapModelCurrencyToDto(result)
+
+	return data, err
+}
+
+// mapModelCurrencyToDto function maps model struct to an external object
+func mapModelCurrencyToDto(currencies []model.Currency) []currency.Currency {
 	var list []currency.Currency
 	for _, c := range currencies {
 		list = append(list, currency.Currency{

@@ -14,7 +14,7 @@ RETURNING *;
 SELECT * FROM currency
 WHERE code = $1 AND updated_at BETWEEN SYMMETRIC $2 AND $3;
 
--- name: GetCurrenciesByAll :many
+-- name: GetAllCurrencies :many
 SELECT * FROM currency
 WHERE code != 'ALL' AND updated_at BETWEEN SYMMETRIC $1 AND $2;
 

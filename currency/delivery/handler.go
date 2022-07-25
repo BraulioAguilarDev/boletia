@@ -57,8 +57,11 @@ func checkDates(finit, fend string) (*Dates, error) {
 
 // GetCurrencies is a handler an is used in /api/v1/currencies
 func (h *Handler) GetCurrencies(ctx *fiber.Ctx) error {
+
+	var currencies []currency.Currency
+
 	// Get Params and query
-	currency := ctx.Params("currency")
+	currencyCode := ctx.Params("currency")
 	finit := ctx.Query("finit")
 	fend := ctx.Query("fend")
 
@@ -72,11 +75,18 @@ func (h *Handler) GetCurrencies(ctx *fiber.Ctx) error {
 		return nil
 	}
 
-	if currency == ALL {
+	if currencyCode == ALL {
+		currencies, err = h.Usecase.GetAllCurrencies(dates.Start, dates.End)
+		if err != nil {
+			glog.Errorf("Error getting all currencies: %s", err.Error())
 
+			ctx.Status(http.StatusInternalServerError)
+			ctx.JSON(request.Failure(err.Error()))
+			return nil
+		}
 	} else {
 		// Pass values to usecase -- currencies
-		currencies, err := h.Usecase.GetCurrenciesByCode(currency, dates.Start, dates.End)
+		currencies, err = h.Usecase.GetCurrenciesByCode(currencyCode, dates.Start, dates.End)
 		if err != nil {
 			glog.Errorf("Error getting currencies by code: %s", err.Error())
 
@@ -84,12 +94,18 @@ func (h *Handler) GetCurrencies(ctx *fiber.Ctx) error {
 			ctx.JSON(request.Failure(err.Error()))
 			return nil
 		}
-
-		ctx.JSON(request.Response{
-			Success: true,
-			Data:    currencies,
-		})
 	}
+
+	// We not have rows
+	if len(currencies) == 0 {
+		ctx.Status(http.StatusNotFound)
+		return nil
+	}
+
+	ctx.JSON(request.Response{
+		Success: true,
+		Data:    currencies,
+	})
 
 	return nil
 }

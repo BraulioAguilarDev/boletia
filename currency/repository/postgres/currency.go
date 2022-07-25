@@ -52,3 +52,13 @@ func (c CurrencyRepository) GetCurrenciesByCode(code string, start, end time.Tim
 
 	return data, err
 }
+
+// GetAllCurrencies retuns all rows from db
+func (c CurrencyRepository) GetAllCurrencies(start, end time.Time) ([]model.Currency, error) {
+	data, err := c.db.GetAllCurrencies(c.ctx, model.GetAllCurrenciesParams{
+		UpdatedAt:   start,
+		UpdatedAt_2: end,
+	})
+
+	return data, err
+}

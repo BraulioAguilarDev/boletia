@@ -10,6 +10,15 @@ INSERT INTO currency (
 )
 RETURNING *;
 
+-- name: GetCurrenciesByCode :many
+SELECT * FROM currency
+WHERE code = $1 AND updated_at BETWEEN SYMMETRIC $2 AND $3;
+
+-- name: GetCurrenciesByAll :many
+SELECT * FROM currency
+WHERE code != 'ALL' AND updated_at BETWEEN SYMMETRIC $1 AND $2;
+
+
 -- name: CreateLog :one
 INSERT INTO log (
   duration, code, request, created_at

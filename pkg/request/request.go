@@ -6,6 +6,13 @@ import (
 	"time"
 )
 
+// Global response
+type Response struct {
+	Success bool        `json:"success"`
+	Message string      `json:"message,omitempty"`
+	Data    interface{} `json:"data,omitempty"`
+}
+
 // Request struct
 type Request struct {
 	Client *http.Client
@@ -24,6 +31,22 @@ func NewClient(timeout int) *Request {
 		Client: &http.Client{
 			Timeout: time.Duration(timeout) * time.Second,
 		},
+	}
+}
+
+// Success returns a simple payload for success
+func Success(msg string) Response {
+	return Response{
+		Success: true,
+		Message: msg,
+	}
+}
+
+// Failure returns a simple payload for failed
+func Failure(msg string) Response {
+	return Response{
+		Success: false,
+		Message: msg,
 	}
 }
 

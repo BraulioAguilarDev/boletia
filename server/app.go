@@ -8,6 +8,8 @@ import (
 	"boletia/log"
 	logRepository "boletia/log/repository/postgres"
 	usecaseLog "boletia/log/usecase"
+
+	handler "boletia/currency/delivery"
 	"context"
 	"database/sql"
 	"fmt"
@@ -52,7 +54,7 @@ func NewApp() (*App, error) {
 
 // SetupRouter makes public routes
 func (app *App) SetupRouter() {
-	// fmt.Println("router")
+	handler.MakeCurrencyHandler(app.CurrencyUsecase, app.Service)
 }
 
 // Run function executes our service

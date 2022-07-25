@@ -6,6 +6,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"time"
 )
 
 type CurrencyRepository struct {
@@ -39,4 +40,15 @@ func (c CurrencyRepository) Create(data monitor.Response) error {
 	}
 
 	return nil
+}
+
+// GetCurrenciesByCode retuns a currencies list filtered by code
+func (c CurrencyRepository) GetCurrenciesByCode(code string, start, end time.Time) ([]model.Currency, error) {
+	data, err := c.db.GetCurrenciesByCode(c.ctx, model.GetCurrenciesByCodeParams{
+		Code:        code,
+		UpdatedAt:   start,
+		UpdatedAt_2: end,
+	})
+
+	return data, err
 }

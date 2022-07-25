@@ -3,5 +3,4 @@ config.yml
 tmp
 response.json
 .env
-model
 boletia

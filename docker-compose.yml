@@ -9,22 +9,22 @@ services:
     expose:
       - "$POSTGRES_PORT"
     volumes:
-      - b_postgres:/var/lib/postgresql/data/
+      - db_postgres:/var/lib/postgresql/data/
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}
       - DATABASE_HOST=${POSTGRES_CONTAINER}
   api:
-    image: $B_IMAGE
-    container_name: $B_CONTAINER
+    image: $IMAGE
+    container_name: $CONTAINER
     restart: on-failure
     env_file:
       - .env
     ports:
-      - "${B_PORT}:${B_PORT}"
+      - "${PORT}:${PORT}"
     volumes:
-      - "${B_VOLUME}"
+      - "${VOLUME}"
     depends_on:
       - postgres
 
@@ -33,4 +33,4 @@ networks:
     name: $NETWORK
 
 volumes:
-  b_postgres:
+  db_postgres:

@@ -1,0 +1,34 @@
+# Simple config for air
+
+# .air.toml
+root = "."
+tmp_dir = "tmp"
+
+[build]
+# Just plain old shell command. You could use 'make' as well
+cmd = "go build -o ./tmp/main main.go"
+
+# Binary file
+bin = "tmp/main"
+
+# Customize binary
+full_bin = "./tmp/main -logtostderr=true -v=3"
+
+# Logs
+log = "app-errors.log"
+
+# Watch there filename extensions
+include_ext = ["go", "yaml", "yml"]
+
+# Ignore there filename extensions or directories
+exclude_dir = ["tmp"]
+
+delay = 1000
+
+[log]
+# Show log time
+time = true
+
+[misc]
+# Delete tmp directory on exit
+clean_on_exit = true

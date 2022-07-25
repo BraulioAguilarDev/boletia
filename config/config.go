@@ -17,6 +17,7 @@ type Database struct {
 type Settings struct {
 	Period  int
 	Timeout int
+	Port    int
 
 	ApiKey string
 	ApiURL string

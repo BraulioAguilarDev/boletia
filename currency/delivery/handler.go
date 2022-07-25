@@ -4,7 +4,6 @@ import (
 	"boletia/currency"
 	"boletia/pkg/request"
 	"net/http"
-	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang/glog"
@@ -16,54 +15,27 @@ type Handler struct {
 	Usecase currency.Usecase
 }
 
-type Dates struct {
-	Start time.Time
-	End   time.Time
-}
-
 func NewHandler(usecase currency.Usecase) *Handler {
 	return &Handler{
 		Usecase: usecase,
 	}
 }
 
-func checkDates(finit, fend string) (*Dates, error) {
-	var (
-		start, end time.Time
-		err        error
-	)
-
-	if len(finit) > 0 {
-		start, err = time.Parse("2006-01-02T15:04:05", finit)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	if len(fend) > 0 {
-		end, err = time.Parse("2006-01-02T15:04:05", fend)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	dates := &Dates{
-		Start: start,
-		End:   end,
-	}
-
-	return dates, nil
-}
-
 // GetCurrencies is a handler an is used in /api/v1/currencies
 func (h *Handler) GetCurrencies(ctx *fiber.Ctx) error {
-
 	var currencies []currency.Currency
 
 	// Get Params and query
 	currencyCode := ctx.Params("currency")
 	finit := ctx.Query("finit")
 	fend := ctx.Query("fend")
+
+	// Validates currency code
+	if err := validateParams(currencyCode); err != nil {
+		ctx.Status(http.StatusBadRequest)
+		ctx.JSON(request.Failure("current code not valid"))
+		return nil
+	}
 
 	// Check format dates & return error if are not valid
 	dates, err := checkDates(finit, fend)

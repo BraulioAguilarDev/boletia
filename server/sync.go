@@ -36,7 +36,7 @@ func saveCurrencies(usecase currency.Usecase, res *http.Response) error {
 
 // saveLog keep log request
 func saveLog(usecase log.Usecase, total time.Duration, code int, url string, tm time.Time) error {
-	glog.Infof("Log, code: %d, url: %s", code, url)
+	glog.Infof("Saving the log...")
 
 	if err := usecase.Create(total, code, url, tm); err != nil {
 		return err

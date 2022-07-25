@@ -17,6 +17,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/golang/glog"
 	_ "github.com/lib/pq"
 )
 
@@ -61,6 +62,7 @@ func (app *App) SetupRouter() {
 func (app *App) Run(port string) error {
 
 	app.SetupRouter()
+	glog.Infof("Service is running in %s", port)
 
 	if err := app.Service.Listen(port); err != nil {
 		return err

@@ -5,8 +5,9 @@ import (
 	"boletia/monitor"
 	"context"
 	"database/sql"
-	"fmt"
 	"time"
+
+	"github.com/golang/glog"
 )
 
 type CurrencyRepository struct {
@@ -26,18 +27,20 @@ func (c CurrencyRepository) Create(data monitor.Response) error {
 
 	// TODO: check the best option for this
 	for _, item := range data.Data {
-		created, err := c.db.CreateCurrency(c.ctx, model.CreateCurrencyParams{
+		currency, err := c.db.CreateCurrency(c.ctx, model.CreateCurrencyParams{
 			Code:      item.Code,
 			Value:     item.Value,
 			UpdatedAt: data.Meta.LastUpdatedAt,
 		})
 
-		fmt.Println("inserted:", created)
+		glog.Infof("Saved: %v", currency)
 
 		if err != nil {
 			return err
 		}
 	}
+
+	glog.Infof("%d rows was inserted.", len(data.Data))
 
 	return nil
 }

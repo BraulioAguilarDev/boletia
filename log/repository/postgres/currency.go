@@ -4,6 +4,8 @@ import (
 	"boletia/model"
 	"context"
 	"database/sql"
+
+	"github.com/golang/glog"
 )
 
 type LogRepository struct {
@@ -20,11 +22,12 @@ func NewLogRepository(db *sql.DB, ctx context.Context) *LogRepository {
 
 func (l LogRepository) Create(data model.CreateLogParams) error {
 
-	_, err := l.db.CreateLog(l.ctx, data)
-
+	log, err := l.db.CreateLog(l.ctx, data)
 	if err != nil {
 		return err
 	}
+
+	glog.Infof("Log saved: %v", log)
 
 	return nil
 }

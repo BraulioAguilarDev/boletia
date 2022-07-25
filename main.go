@@ -1,8 +1,10 @@
 package main
 
 import (
+	"boletia/config"
 	"boletia/server"
 	"flag"
+	"fmt"
 
 	"github.com/golang/glog"
 )
@@ -20,7 +22,7 @@ func main() {
 	go app.Sync()
 
 	// Run service
-	if err := app.Run(":9090"); err != nil {
+	if err := app.Run(":" + fmt.Sprint(config.Config.Port)); err != nil {
 		glog.Errorf("Run failed: %s", err.Error())
 	}
 }

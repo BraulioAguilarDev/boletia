@@ -1,4 +1,4 @@
-.PHONY: seed dc-up
+.PHONY: seed dc-up docker build
 
 seed:
 	docker exec -i boletia-db /bin/bash -c "PGPASSWORD=password psql --username postgres boletia" < ./migrations/01_currency.up.sql
@@ -11,3 +11,6 @@ dc-down:
 
 docker:
 	docker build -t golang/air .
+
+build:
+	go build

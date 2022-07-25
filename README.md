@@ -8,9 +8,16 @@ Pull & Save info from [currencyapi](https://currencyapi.com/) built with [fiber]
 $ cp sample.env .env
 
 $ cp config/sample.config.yml config.yml
+
+# Updates the new files with your information if you want
 ```
 
-Updates the new files with your information if you want
+
+
+## Requirements
++ [Docker](https://www.docker.com/)
++ [sqlc](https://docs.sqlc.dev/en/latest/index.html)
++ [Docker compose](https://docs.docker.com/compose/)
 
 ## Test code
 
